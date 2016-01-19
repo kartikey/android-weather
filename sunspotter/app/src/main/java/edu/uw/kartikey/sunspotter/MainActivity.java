@@ -46,26 +46,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         String api_key = "0f6bcd4dd84f83a513571b0433badda6";
 
-        String weather_data[]  = {"1","2","3"};
-
-
-//Arrays.asList(weather_data)
         ArrayList<String> list = new ArrayList<String>();
 
         //controller
         adapter = new ArrayAdapter<String>(
                 this, R.layout.list_item, R.id.txtItem, list);
 
-
         AdapterView listView = (AdapterView)findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
-
         Log.v("ListActivity", "WORKING");
-
 
         final EditText text = (EditText)findViewById(R.id.searchField);
         final Button button = (Button)findViewById(R.id.searchButton);
@@ -80,12 +72,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "You typed: " + typed);
             }
         });
-
     }
 
-
     public class DownloadWeatherData extends AsyncTask<String, Void, String[]> {
-
 
         protected String weather_array[];
         protected String day_array[];
@@ -96,13 +85,11 @@ public class MainActivity extends AppCompatActivity {
 
         protected String[] doInBackground(String... params){
 
-
-
             String zipcode = params[0];
 
             String urlString = "";
             try {
-                urlString = "http://api.openweathermap.org/data/2.5/forecast?zip="+URLEncoder.encode(zipcode, "UTF-8") +"&APPID=0f6bcd4dd84f83a513571b0433badda6"; //+URLEncoder.encode(movie, "UTF-8") + "&type=movie";
+                urlString = "http://api.openweathermap.org/data/2.5/forecast?zip="+URLEncoder.encode(zipcode, "UTF-8") +"&APPID=0f6bcd4dd84f83a513571b0433badda6";
             }catch(Exception uee){
                 return null;
             }
@@ -114,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
 
             try {
-
-                Log.v("ListActivity", "BACKGROUN");
 
                 URL url = new URL(urlString);
 
@@ -142,17 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String results = buffer.toString();
 
-                Log.v(TAG, results);
+                //Log.v(TAG, results);
 
-                JSONObject jo = new JSONObject();
-
-                    jo = new JSONObject(results);
-
+                JSONObject jo = new JSONObject(results);
                 JSONArray arr = new JSONArray();
-
-
-                    arr = jo.getJSONArray("list");
-                    //Log.v(TAG,arr.toString());
+                arr = jo.getJSONArray("list");
 
                 String[] days = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
                 String[] ampm = {"AM","PM"};
@@ -167,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
                 for(int i = 0;i < arr.length();i++) {
                     JSONObject temp = new JSONObject(arr.getString(i));
-                    //temp.getString("dt_txt")
+
                     SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = simpleDate.parse(temp.getString("dt_txt"));
                     Calendar cal = Calendar.getInstance();
@@ -176,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     int dayDate = cal.get(Calendar.DATE);
                     int time = cal.get(Calendar.HOUR);
                     int am_pm = cal.get(Calendar.AM_PM);
-                    //JSONArray weatherArray = temp.getJSONArray("weather");
+
                     JSONObject weatherObject = new JSONObject(temp.getJSONArray("weather").getString(0).toString());
                     String weather = weatherObject.getString("main");
                     int temperature = (temp.getJSONObject("main")).getInt("temp");
@@ -201,13 +180,11 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-            catch (JSONException e) {
+            catch (JSONException | ParseException e) {
                 e.printStackTrace();
             }
             catch (IOException e) {
                 return null;
-            }  catch (ParseException e) {
-                e.printStackTrace();
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -217,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         reader.close();
                     }
                     catch (final IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -232,12 +210,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+                // Inflating View Stub Dynamically
+               RelativeLayout rl = (RelativeLayout) findViewById(R.id.firstSunView);
+
+
+                Log.v(TAG, "checking "+(rl));
 
                 ViewStub stub = (ViewStub) findViewById(R.id.stubView);
-                //stub.setLayoutResource(R.layout.mid_section_nosun);
-                stub.setLayoutResource(R.layout.mid_section);
-                stub.inflate();
 
+
+                    Log.v(TAG, " id before set: " + stub.getInflatedId());
+                    stub.setLayoutResource(R.layout.mid_section);
+                    Log.v(TAG, " id after set: " + stub.getInflatedId());
+                    stub.inflate();
+
+
+
+                // Modify text view and images based on clear weather or not.
                 TextView tv = (TextView) findViewById(R.id.sunText);
                 TextView tv2 = (TextView) findViewById(R.id.willBeSun);
                 ImageView iv = (ImageView) findViewById(R.id.sunImage);
@@ -249,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     adapter.add(d);
                 }
 
+                // To change text of mid section dynamically if there is sun!
                 for(int i =0; i<weather_array.length;i++) {
                     if(weather_array[i].equals("Clear")) {
 
