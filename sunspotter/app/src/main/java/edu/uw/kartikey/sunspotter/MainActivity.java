@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
     static final String TAG = "Main Activity: ";
+    View inflated = null;
 
 
     @Override
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         protected String time_array[];
         protected String am_pm_array[];
         protected int temperature_array[];
+        protected ViewStub stub = null;
+
 
         protected String[] doInBackground(String... params){
 
@@ -214,17 +217,17 @@ public class MainActivity extends AppCompatActivity {
                RelativeLayout rl = (RelativeLayout) findViewById(R.id.firstSunView);
 
 
-                Log.v(TAG, "checking "+(rl));
+                Log.v(TAG, "checking " + (inflated));
 
-                ViewStub stub = (ViewStub) findViewById(R.id.stubView);
-
-
+                if(inflated == null) {
+                    stub = (ViewStub) findViewById(R.id.stubView);
                     Log.v(TAG, " id before set: " + stub.getInflatedId());
                     stub.setLayoutResource(R.layout.mid_section);
                     Log.v(TAG, " id after set: " + stub.getInflatedId());
-                    stub.inflate();
+                    inflated = stub.inflate();
+                }
 
-
+                Log.v(TAG, "again " + (inflated));
 
                 // Modify text view and images based on clear weather or not.
                 TextView tv = (TextView) findViewById(R.id.sunText);
